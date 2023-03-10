@@ -1,4 +1,5 @@
 import time
+import json
 
 from bs4 import BeautifulSoup
 import requests
@@ -9,6 +10,12 @@ parser.read('config.txt')
 class_category = parser.get('config', 'organization_type')
 is_active = parser.get('config', 'is_active')
 name = parser.get('config', 'search_term')
+
+file_name = 'eAdventists_' + class_category + '.json'
+
+with open(file_name, 'w') as empty_json:
+    json.dump([], empty_json, indent=4)
+    empty_json.close()
 
 
 def get_class_from_category(string):
@@ -54,27 +61,80 @@ def get_urls_list(html):
     return links
 
 
-def scrape_data_from_url_page(html):
-    return "hi"
+def write_json_data(data_dict):
+
+    # read file
+    with open(file_name, "r") as read:
+        data = json.load(read)
+
+    # update json object
+    data.append(data_dict)
+    print(data)
+
+    # write json file
+    with open(file_name, 'w') as write:
+        json.dump(data, write, indent=4)
+
+
+def scrape_data_from_url_page(url):
+    time.sleep(4)
+
+    full_url = 'https://eadventist.net' + url
+    server = requests.post(full_url)
+    status_code = server.status_code
+
+    if status_code == 429:
+        time.sleep(30)
+        server = requests.post(full_url)
+
+    html = server.text
+    soup = BeautifulSoup(html, 'lxml')
+
+    # Get Data and Transfer to Txt File
+    title = soup.find('span', id='title')
+    fields = soup.find_all('td', class_='field')
+    labels = soup.find_all('label')
+
+    field_array = []
+
+    for field in fields:
+        if field.a is not None:
+            field_array.append(field.a['href'] + " " + field.text)
+        else:
+            field_array.append(field.text.replace('\xa0', ''))
+
+    label_array = []
+
+    for label in labels:
+        label_array.append(label.text)
+
+    data_dict = {'title': title.text}
+
+    for i in range(len(label_array)):
+        data_dict[label_array[i]] = field_array[i]
+
+    write_json_data(data_dict)
 
 
 def get_results_page(page):
     string_number = page.__str__()
     url = 'https://eadventist.net/en/search?page=' + string_number + '&type=a'
 
-    time.sleep(5)  # avoid 429 too many requests
-
+    time.sleep(4)  # avoid 429 too many requests - 4s seems to be the most optimal
     server = requests.post(url, data=form_data)
-    search_results_html = server.text
+    status_code = server.status_code
 
-    status_code = server
-    print(status_code)
+    # handle 429 code
+    if status_code == 429:
+        time.sleep(30)
+        server = requests.post(url, data=form_data)
+
+    search_results_html = server.text
 
     url_list = get_urls_list(search_results_html)
 
-    # for url in url_list:
-    #     # add scrape data method here
-    #     print(url)
+    for url in url_list:
+        scrape_data_from_url_page(url)
 
     return len(url_list)
 
@@ -85,5 +145,6 @@ def go_to_next_page():
     while get_results_page(page) > 0:
         print('yay')
         page += 1
+
 
 go_to_next_page()
