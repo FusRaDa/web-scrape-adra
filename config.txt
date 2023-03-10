@@ -18,6 +18,8 @@
 
 
 [config]
-organization_type=Unknown
+organization_type=School
 is_active=Y
+
+search_term=
 
