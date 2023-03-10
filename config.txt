@@ -1,0 +1,23 @@
+# Do not move this file - Matthew Rada
+
+# Options for organization_type:
+# Conf/Union/Div
+# Congregation
+# School
+# Conf/Union/Div Sub-Orgs
+# Medical
+# Media
+# Publishing
+# Foreign
+# Unknown
+# Congregation Sub-Orgs
+
+# Options for is_active:
+#Y
+#N
+
+
+[config]
+organization_type=Unknown
+is_active=Y
+
