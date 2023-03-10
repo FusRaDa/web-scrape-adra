@@ -8,6 +8,8 @@ class_category = parser.get('config', 'organization_type')
 is_active = parser.get('config', 'is_active')
 
 
+
+
 def get_class_from_category(string):
     if string == 'Conf/Union/Div':
         return 1
@@ -33,11 +35,15 @@ def get_class_from_category(string):
         return 0
 
 
-def web_scrape(html):
-    return 'hi'
+def get_urls_list(html):
+    soup = BeautifulSoup(html, 'lxml')
+    url_list = soup.find_all('tr', class_='results-line-1')
+    for url in url_list:
+        link = url.a['href']
+        print(link)
 
 
-def gather_from_page(page_number):
+def gather_from_page():
 
     url = 'https://eadventist.net/en/search?page=1&type=a'
 
@@ -50,4 +56,9 @@ def gather_from_page(page_number):
 
     server = requests.post(url, data=form_data)
     search_results_html = server.text
+
+    get_urls_list(search_results_html)
+
+
+gather_from_page()
 
