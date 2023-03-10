@@ -5,6 +5,10 @@ from bs4 import BeautifulSoup
 import requests
 import configparser
 
+# The purpose of this file is scrape data from https://eadventist.net and convert it into a json file
+
+# The next step is to run csv.py to convert the json file into csv
+
 parser = configparser.ConfigParser()
 parser.read('config.txt')
 class_category = parser.get('config', 'organization_type')
@@ -13,6 +17,7 @@ name = parser.get('config', 'search_term')
 
 file_name = 'eAdventists_' + class_category + '.json'
 
+# Initialize emtpy json file
 with open(file_name, 'w') as empty_json:
     json.dump([], empty_json, indent=4)
     empty_json.close()
@@ -69,7 +74,6 @@ def write_json_data(data_dict):
 
     # update json object
     data.append(data_dict)
-    print(data)
 
     # write json file
     with open(file_name, 'w') as write:
@@ -84,6 +88,7 @@ def scrape_data_from_url_page(url):
     status_code = server.status_code
 
     if status_code == 429:
+        print("Encountered status code 429, waiting for 30s for next request...")
         time.sleep(30)
         server = requests.post(full_url)
 
@@ -99,9 +104,9 @@ def scrape_data_from_url_page(url):
 
     for field in fields:
         if field.a is not None:
-            field_array.append(field.a['href'] + " " + field.text)
+            field_array.append(field.a['href'].replace(",", "") + " " + field.text)
         else:
-            field_array.append(field.text.replace('\xa0', ''))
+            field_array.append(field.text.replace('\xa0', '').replace(',', ""))
 
     label_array = []
 
@@ -113,6 +118,7 @@ def scrape_data_from_url_page(url):
     for i in range(len(label_array)):
         data_dict[label_array[i]] = field_array[i]
 
+    print(data_dict)
     write_json_data(data_dict)
 
 
@@ -126,6 +132,7 @@ def get_results_page(page):
 
     # handle 429 code
     if status_code == 429:
+        print("Encountered status code 429, waiting for 30s for next request...")
         time.sleep(30)
         server = requests.post(url, data=form_data)
 
@@ -143,7 +150,7 @@ def go_to_next_page():
     page = 1
 
     while get_results_page(page) > 0:
-        print('yay')
+        print("Page " + page.__str__())
         page += 1
 
 
