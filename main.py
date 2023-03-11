@@ -5,10 +5,11 @@ from bs4 import BeautifulSoup
 import requests
 import configparser
 
-# The purpose of this file is scrape data from https://eadventist.net and convert it into a json file
+# The purpose of this file is scrape data from https://eadventist.net and store it into a json file
 
 # The next step is to run csv.py to convert the json file into csv
 
+# read config.txt
 parser = configparser.ConfigParser()
 parser.read('config.txt')
 class_category = parser.get('config', 'organization_type')
