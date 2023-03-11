@@ -2,6 +2,10 @@ import configparser
 import json
 from itertools import chain
 
+# After running this script, import with Excel
+
+# Excel settings: Delimited -> set delimiter as comma only, and finish!
+
 parser = configparser.ConfigParser()
 parser.read('config.txt')
 class_category = parser.get('config', 'organization_type')
@@ -26,21 +30,21 @@ def get_all_keys():
 
 # replace '' with Facebook as new key
 search_keys = get_all_keys()
-search_keys[0] = "Facebook"
-for data in json_file:
-    for key in data.keys():
-        if key == '':
-            key = 'Facebook'
 
+# write headers first
 for key in search_keys:
-    txt_file.write((key + ", "))
+    # replace '' with Facebook
+    if key == "":
+        txt_file.write("Facebook,")
+    else:
+        txt_file.write((key + ", "))
 
 txt_file.write("\n")
 
 for data in json_file:
     for key in search_keys:
         try:
-            txt_file.write(data[key] + ",")
+            txt_file.write(data[key].replace('\n', '') + ",")
         except KeyError:
             txt_file.write("N/A,")
     txt_file.write("\n")
