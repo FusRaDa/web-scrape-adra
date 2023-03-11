@@ -28,16 +28,16 @@ def get_all_keys():
     return array
 
 
-# replace '' with Facebook as new key
 search_keys = get_all_keys()
 
+# You may edit headers here or on Excel
+copy_search_keys = search_keys.copy()
+copy_search_keys[0] = "Facebook"
+print(copy_search_keys)
+
 # write headers first
-for key in search_keys:
-    # replace '' with Facebook
-    if key == "":
-        txt_file.write("Facebook,")
-    else:
-        txt_file.write((key + ", "))
+for key in copy_search_keys:
+    txt_file.write((key + ", "))
 
 txt_file.write("\n")
 
