@@ -25,28 +25,21 @@ with open(file_name, 'w') as empty_json:
 
 
 def get_class_from_category(string):
-    if string == 'Conf/Union/Div':
-        return 1
-    elif string == 'Congregation':
-        return 2
-    elif string == 'School':
-        return 3
-    elif string == 'Conf/Union/Div Sub-Orgs':
-        return 4
-    elif string == 'Medical':
-        return 5
-    elif string == 'Media':
-        return 6
-    elif string == 'Publishing':
-        return 7
-    elif string == 'Foreign':
-        return 8
-    elif string == 'Unknown':
-        return 9
-    elif string == 'Congregation Sub-Orgs':
-        return 10
-    else:
-        return 0
+
+    mapping = {
+        'Conf/Union/Div': 1,
+        'Congregation': 2,
+        'School': 3,
+        'Conf/Union/Div Sub-Orgs': 4,
+        'Medical': 5,
+        'Media': 6,
+        'Publishing': 7,
+        'Foreign': 8,
+        'Unknown': 9,
+        'Congregation Sub-Orgs': 10
+    }
+
+    return mapping.get(string, 0)
 
 
 form_data = {
@@ -127,7 +120,7 @@ def get_results_page(page):
     string_number = page.__str__()
     url = 'https://eadventist.net/en/search?page=' + string_number + '&type=a'
 
-    time.sleep(4)  # avoid 429 too many requests - 4s seems to be the most optimal
+    time.sleep(5)  # avoid 429 too many requests - 5s seems to be the most optimal
     server = requests.post(url, data=form_data)
     status_code = server.status_code
 

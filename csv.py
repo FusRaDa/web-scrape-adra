@@ -24,7 +24,7 @@ def get_all_keys():
     all_keys = list(set(chain.from_iterable(sub.keys() for sub in json_file)))
     for label in all_keys:
         array.append(label)
-        array.sort(key=str.lower)
+    array.sort(key=str.lower)
     return array
 
 
@@ -44,7 +44,7 @@ txt_file.write("\n")
 for data in json_file:
     for key in search_keys:
         try:
-            txt_file.write(data[key].replace('\n', '') + ",")
+            txt_file.write(data[key].replace('\r\n', '').replace('\n', '').replace(',', '') + ",")
         except KeyError:
             txt_file.write("N/A,")
     txt_file.write("\n")
